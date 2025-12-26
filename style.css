@@ -1,4 +1,4 @@
-/* TYPOGRAPHIE & BODY */
+
 body {
     font-family: 'Poppins', Arial, sans-serif;
     margin: 0;
@@ -26,13 +26,12 @@ nav button:hover {
     color: #e50914;
 }
 
-/* SECTIONS */
+
 .section {
     display: none;
     margin-top: 20px;
 }
 
-/* FORMULAIRES */
 #reservationForm {
     display: none;
     margin-top: 10px;
@@ -47,7 +46,7 @@ input, select, button {
     border: 1px solid #ccc;
 }
 
-/* FILMS */
+
 .movies-container {
     display: flex;
     flex-wrap: wrap;
@@ -71,13 +70,13 @@ input, select, button {
     box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
 }
 
-/* Film indisponible */
+
 .unavailable {
     opacity: 0.5;
     pointer-events: none;
 }
 
-/* MODE SOMBRE / CLAIR */
+
 .dark {
     background-color: #111;
     color: white;
