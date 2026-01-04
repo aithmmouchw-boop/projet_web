@@ -5,6 +5,9 @@
     <title>CineTech</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
 </head>
 <body class="light">
 
@@ -13,7 +16,9 @@
     <nav>
         <button onclick="showSection('films')">Films</button>
         <button onclick="showSection('reservation')">Réservation</button>
-        <button onclick="showSection('contact')">Contact</button>
+        <button onclick="showSection('seats')">Salles</button>
+        <button onclick="showSection('dashboard')">Dashboard</button>
+        <button onclick="showSection('dashboardAPI')">Dashboard API</button>
         <button onclick="toggleTheme()">🌙 / ☀️</button>
     </nav>
 </header>
@@ -29,73 +34,58 @@
     <!-- RESERVATION -->
     <section id="reservation" class="section">
         <h2>Réserver une séance</h2>
-
-        <p class="info">
-            Choisissez un film disponible, entrez votre nom et le nombre de places.
-        </p>
-
+        <p class="info">Choisissez un film, entrez votre nom et le nombre de places.</p>
         <button class="primary" onclick="showForm()">Faire une réservation</button>
 
-        <form id="reservationForm">
+        <form id="reservationForm" style="display:none;">
             <select id="filmSelect"></select>
-
             <input type="text" id="nom" placeholder="Votre nom">
             <input type="number" id="places" placeholder="Nombre de places" min="1">
-
-            <button type="button" class="primary" onclick="reserver()">
-                Confirmer la réservation
-            </button>
+            <button type="button" class="primary" onclick="reserver()">Confirmer la réservation</button>
         </form>
 
         <p id="message"></p>
         <p class="counter">Total des réservations : <span id="count">0</span></p>
     </section>
+
+    <!-- SALLE -->
     <section id="seats" class="section">
-    <h2>Choix des places</h2>
+        <h2>Choix des places</h2>
+        <div class="screen">🎬 ÉCRAN</div>
+        <div id="seatGrid" class="seats"></div>
+        <button class="primary" onclick="confirmSeats()">Confirmer les places</button>
+        <p id="seatMessage"></p>
+    </section>
 
-    <p>Sélectionnez vos sièges :</p>
+    <!-- DASHBOARD LOCAL -->
+    <section id="dashboard" class="section">
+        <h2>📊 Dashboard Administrateur</h2>
+        <div class="dash-cards">
+            <div class="dash-card"><h3>🎬 Films</h3><p id="dashFilms">0</p></div>
+            <div class="dash-card"><h3>📑 Réservations</h3><p id="dashReservations">0</p></div>
+            <div class="dash-card"><h3>💺 Places réservées</h3><p id="dashSeats">0</p></div>
+        </div>
+        <h3>🕒 Dernière réservation</h3>
+        <p id="lastReservation">Aucune réservation</p>
+        <h3>📊 Répartition des films par genre</h3>
+         <canvas id="filmsChart" width="600" height="300"></canvas>
 
-    <div class="screen">🎬 ÉCRAN</div>
+    </section>
 
-    <div id="seatGrid" class="seats"></div>
+    <!-- DASHBOARD OMDB -->
+    <section id="dashboardAPI" class="section">
+        <h2>KPI Cinéma (OMDB)</h2>
+        <div id="dashAPI"></div>
+        <button onclick="resetAll()" class="reset-btn">
+   🔄 Réinitialiser les données
+</button>
 
-    <button class="primary" onclick="confirmSeats()">
-        Confirmer les places
-    </button>
-
-    <p id="seatMessage"></p>
-</section>
-
-
-    <!-- CONTACT -->
-     <section id="contact" class="section">
-    <h2>Contactez-nous</h2>
-    <p>Vous pouvez nous joindre via email, téléphone ou nos réseaux sociaux :</p>
-
-    <div class="contact-info">
-        <p>📧 Email : <a href="mailto:contact@cinetech.com">contact@cinetech.com</a></p>
-        <p>📞 Téléphone : <a href="tel:+212600000000">+212 6 00 00 00 00</a></p>
-    </div>
-
-    <div class="socials">
-        <p>Suivez-nous sur :</p>
-        <a href="#" class="social">Facebook</a>
-        <a href="#" class="social">Instagram</a>
-        <a href="#" class="social">Twitter</a>
-    </div>
-
-    <form id="contactForm">
-        <input type="text" id="contactName" placeholder="Votre nom">
-        <input type="email" id="contactEmail" placeholder="Votre email">
-        <textarea id="contactMessage" placeholder="Votre message"></textarea>
-        <button type="button" class="primary" onclick="sendMessage()">Envoyer</button>
-    </form>
-
-    <p id="contactFeedback"></p>
-</section>
- 
+    </section>
 
 </main>
+<canvas id="filmsChart" width="600" height="300"></canvas>
+
+
 
 <script src="projet.js"></script>
 </body>
