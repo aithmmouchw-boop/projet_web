@@ -5,9 +5,7 @@
     <title>CineTech</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="light">
 
@@ -34,15 +32,16 @@
     <!-- RESERVATION -->
     <section id="reservation" class="section">
         <h2>Réserver une séance</h2>
-        <p class="info">Choisissez un film, entrez votre nom et le nombre de places.</p>
+        <p class="info">Choisissez un film, entrez votre nom, l'heure et le nombre de places.</p>
         <button class="primary" onclick="showForm()">Faire une réservation</button>
 
-        <form id="reservationForm" style="display:none;">
-            <select id="filmSelect"></select>
-            <input type="text" id="nom" placeholder="Votre nom">
-            <input type="number" id="places" placeholder="Nombre de places" min="1">
-            <button type="button" class="primary" onclick="reserver()">Confirmer la réservation</button>
-        </form>
+       <form id="reservationForm" style="display:none;">
+    <select id="filmSelect" onchange="updateHeureSelect()"></select>
+    <select id="heureSelect"></select> <!-- heures générées automatiquement -->
+    <input type="text" id="nom" placeholder="Votre nom">
+    <input type="number" id="places" placeholder="Nombre de places" min="1">
+    <button type="button" class="primary" onclick="reserver()">Confirmer la réservation</button>
+</form>
 
         <p id="message"></p>
         <p class="counter">Total des réservations : <span id="count">0</span></p>
@@ -69,7 +68,6 @@
         <p id="lastReservation">Aucune réservation</p>
         <h3>📊 Répartition des films par genre</h3>
          <canvas id="filmsChart" width="600" height="300"></canvas>
-
     </section>
 
     <!-- DASHBOARD OMDB -->
@@ -77,15 +75,12 @@
         <h2>KPI Cinéma (OMDB)</h2>
         <div id="dashAPI"></div>
         <button onclick="resetAll()" class="reset-btn">
-   🔄 Réinitialiser les données
-</button>
-
+            🔄 Réinitialiser les données
+        </button>
     </section>
+    
 
 </main>
-<canvas id="filmsChart" width="600" height="300"></canvas>
-
-
 
 <script src="projet.js"></script>
 </body>

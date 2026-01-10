@@ -1,6 +1,38 @@
+const filmHoraires = {
+    "Ratatouille": ["10:00", "14:00", "17:00"],
+    "Inception": ["12:00", "18:00", "21:00"],
+    "Titanic": ["09:00", "15:00", "20:00"],
+    "The Dark Knight": ["11:00", "16:00", "20:00"],
+    "Forrest Gump": ["10:00", "14:00", "18:00"],
+    "Interstellar": ["12:00", "16:00", "20:00"],
+    "Avatar": ["10:00", "13:00", "17:00", "21:00"],
+    "Joker": ["11:00", "15:00", "19:00"],
+    "The Godfather": ["10:00", "14:00", "18:00"],
+    "Pulp Fiction": ["12:00", "16:00", "20:00"],
+    "Gladiator": ["09:00", "13:00", "17:00", "21:00"],
+    "The Avengers": ["11:00", "15:00", "19:00", "22:00"],
+    "Wonder Woman": ["10:00", "14:00", "18:00"],
+    "Toy Story 4": ["09:00", "12:00", "15:00", "18:00"],
+    "The Lion King": ["10:00", "13:00", "16:00", "19:00"],
+    "Deadpool": ["11:00", "14:00", "18:00", "21:00"],
+    "Finding Nemo": ["09:00", "12:00", "15:00", "18:00"],
+    "The Incredibles": ["10:00", "13:00", "16:00", "19:00"],
+    "Avengers: Endgame": ["11:00", "15:00", "19:00", "22:00"],
+    "Parasite": ["12:00", "16:00", "20:00"],
+    "Shutter Island": ["10:00", "14:00", "18:00"],
+    "The Matrix": ["11:00", "15:00", "19:00", "22:00"],
+    "La La Land": ["09:00", "13:00", "17:00", "20:00"],
+    "Fight Club": ["10:00", "14:00", "18:00", "21:00"],
+    "The Shawshank Redemption": ["09:00", "13:00", "17:00"],
+    "Black Panther": ["11:00", "15:00", "19:00", "22:00"],
+    "Doctor Strange": ["10:00", "14:00", "18:00", "21:00"],
+    "Coco": ["09:00", "12:00", "15:00", "18:00"],
+    "The Wolf of Wall Street": ["11:00", "15:00", "19:00"],
+    "Django Unchained": ["10:00", "14:00", "18:00", "21:00"]
+};
+
 /* ===================== FILMS ===================== */
 let films = [
-
     { title: "Ratatouille", genre: "Animation", available: true },
     { title: "Inception", genre: "Action / Sci-Fi", available: true },
     { title: "Titanic", genre: "Romance / Drame", available: true },
@@ -31,38 +63,86 @@ let films = [
     { title: "Coco", genre: "Animation / Famille / Musical", available: true },
     { title: "The Wolf of Wall Street", genre: "Drame / Biographie", available: true },
     { title: "Django Unchained", genre: "Western / Drame / Action", available: true }
-
 ];
+
 const moviesContainer = document.getElementById("moviesContainer");
 const filmSelect = document.getElementById("filmSelect");
-
-
+const seatGrid = document.getElementById("seatGrid");
+let selectedSeats = [];
+let currentSessionKey = "";
 
 /* ===================== NAVIGATION ===================== */
-function showSection(id) {
+function showSection(id){
     document.querySelectorAll(".section").forEach(s => s.style.display = "none");
     document.getElementById(id).style.display = "block";
 }
+function showForm(){ document.getElementById("reservationForm").style.display = "block"; }
+// Planning automatique des heures pour tous les films
+const horaires = ["09:00", "12:00", "15:00", "18:00", "21:00"];
 
-function showForm() { document.getElementById("reservationForm").style.display = "block"; }
+// Remplit le select des heures en fonction du film choisi
+function updateHeureSelect() {
+    const heureSelect = document.getElementById("heureSelect");
+    heureSelect.innerHTML = ""; // vider avant de remplir
+    horaires.forEach(h => {
+        const option = document.createElement("option");
+        option.value = h;
+        option.textContent = h;
+        heureSelect.appendChild(option);
+    });
+}
+// Met à jour le select des heures en fonction du film choisi
+function updateHeureSelect() {
+    const film = filmSelect.value;
+    const heureSelect = document.getElementById("heureSelect");
+    heureSelect.innerHTML = ""; // vide avant de remplir
+
+    if(filmHoraires[film]){
+        filmHoraires[film].forEach(h => {
+            const option = document.createElement("option");
+            option.value = h;
+            option.textContent = h;
+            heureSelect.appendChild(option);
+        });
+    }
+}
+
+// Quand le film change, mettre à jour automatiquement les horaires
+filmSelect.addEventListener("change", updateHeureSelect);
+
+
+// Quand le film change, on met à jour les heures
+filmSelect.addEventListener("change", updateHeureSelect);
+
 
 /* ===================== RESERVATION ===================== */
-function reserver() {
+function reserver(){
     const nom = document.getElementById("nom").value.trim();
     const places = parseInt(document.getElementById("places").value);
     const film = filmSelect.value;
+    const heure = document.getElementById("heureSelect").value;
 
-    if (!nom || !places || !film) {
-        document.getElementById("message").innerText = "Veuillez remplir tous les champs.";
+    if(!nom || !places || !film || !heure){
+        document.getElementById("message").innerText="Veuillez remplir tous les champs.";
         return;
     }
 
+    // clé unique pour la séance film+heure
+    const currentSessionKey = film + "_" + heure;
+
+    // récupère toutes les réservations existantes
     let reservations = JSON.parse(localStorage.getItem("reservations")) || [];
-    reservations.push({ nom, film, places });
+    reservations.push({nom, film, heure, places});
     localStorage.setItem("reservations", JSON.stringify(reservations));
 
-    document.getElementById("message").innerText =
-        `Merci ${nom}, votre réservation pour "${film}" (${places} place(s)) est confirmée ✅`;
+    // récupère les sièges déjà occupés pour cette séance
+    let allOccupied = JSON.parse(localStorage.getItem("occupiedSeats")) || {};
+    if(!allOccupied[currentSessionKey]) allOccupied[currentSessionKey] = [];
+    // pour le moment on ne réserve pas de sièges précis, on met un nombre fictif
+    allOccupied[currentSessionKey] = allOccupied[currentSessionKey].concat(Array.from({length: places}, (_,i)=>i+1+allOccupied[currentSessionKey].length));
+    localStorage.setItem("occupiedSeats", JSON.stringify(allOccupied));
+
+    document.getElementById("message").innerText = `🎉 ${nom}, réservation confirmée pour "${film}" à ${heure} (${places} place(s))`;
 
     updateCount();
     updateDashboard();
@@ -70,214 +150,175 @@ function reserver() {
     createSeats();
 }
 
-function updateCount() {
-    const reservations = JSON.parse(localStorage.getItem("reservations")) || [];
-    document.getElementById("count").innerText = reservations.length;
-}
 
-/* ===================== THEME ===================== */
-function toggleTheme() {
-    document.body.classList.toggle("dark");
-    document.body.classList.toggle("light");
-}
+/* ===================== SEATS ===================== */
+function createSeats(){
+    seatGrid.innerHTML="";
+    const allOccupied = JSON.parse(localStorage.getItem("occupiedSeats"))||{};
+    const currentSessionKey = filmSelect.value + "_" + document.getElementById("heureSelect").value;
+    const occupied = allOccupied[currentSessionKey] || [];
 
-/* ===================== SALLE ===================== */
-const seatGrid = document.getElementById("seatGrid");
-let selectedSeats = [];
-
-function createSeats() {
-    seatGrid.innerHTML = "";
-    let occupied = JSON.parse(localStorage.getItem("occupiedSeats")) || [];
-
-    for (let i = 1; i <= 40; i++) {
+    for(let i=1;i<=40;i++){
         const seat = document.createElement("div");
         seat.classList.add("seat");
-        if (occupied.includes(i)) seat.classList.add("occupied");
-
-        seat.innerText = i;
-        seat.onclick = () => toggleSeat(i, seat);
+        if(occupied.includes(i)) seat.classList.add("occupied");
+        seat.innerText=i;
+        seat.onclick = ()=>toggleSeat(i, seat);
         seatGrid.appendChild(seat);
     }
 }
 
-function toggleSeat(number, seat) {
-    if (seat.classList.contains("occupied")) return;
-    seat.classList.toggle("selected");
 
-    if (selectedSeats.includes(number)) selectedSeats = selectedSeats.filter(n => n !== number);
+function toggleSeat(number, seat){
+    if(seat.classList.contains("occupied")) return;
+    seat.classList.toggle("selected");
+    if(selectedSeats.includes(number)) selectedSeats = selectedSeats.filter(n=>n!==number);
     else selectedSeats.push(number);
 }
 
-function confirmSeats() {
-    if (selectedSeats.length === 0) {
-        document.getElementById("seatMessage").innerText = "Veuillez sélectionner au moins une place.";
+function confirmSeats(){
+    if(selectedSeats.length===0){
+        document.getElementById("seatMessage").innerText="Veuillez sélectionner au moins une place.";
         return;
     }
 
-    let occupied = JSON.parse(localStorage.getItem("occupiedSeats")) || [];
+    let allOccupied = JSON.parse(localStorage.getItem("occupiedSeats"))||{};
+    let occupied = allOccupied[currentSessionKey]||[];
     occupied = occupied.concat(selectedSeats);
-    localStorage.setItem("occupiedSeats", JSON.stringify(occupied));
+    allOccupied[currentSessionKey]=occupied;
+    localStorage.setItem("occupiedSeats", JSON.stringify(allOccupied));
 
-    document.getElementById("seatMessage").innerText = "🎉 Places réservées : " + selectedSeats.join(", ");
-    selectedSeats = [];
-    createSeats();
+    document.getElementById("seatMessage").innerText="🎉 Places réservées : "+selectedSeats.join(", ");
+    selectedSeats=[]; 
+    createSeats(); 
+    updateDashboard(); 
     updateChart();
-    updateDashboard();
 }
 
-/* ===================== DASHBOARD LOCAL ===================== */
-function updateDashboard() {
+/* ===================== DASHBOARD ===================== */
+function updateCount(){
+    const reservations = JSON.parse(localStorage.getItem("reservations"))||[];
+    document.getElementById("count").innerText=reservations.length;
+}
+
+let chartInstance=null;
+function updateDashboard(){
     document.getElementById("dashFilms").innerText = films.length;
 
     const reservations = JSON.parse(localStorage.getItem("reservations")) || [];
     document.getElementById("dashReservations").innerText = reservations.length;
 
-    const occupied = JSON.parse(localStorage.getItem("occupiedSeats")) || [];
-    document.getElementById("dashSeats").innerText = occupied.length;
+    // Total de places réservées
+    const totalPlaces = reservations.reduce((sum,r)=>sum + r.places, 0);
+    document.getElementById("dashSeats").innerText = totalPlaces;
 
-    if (reservations.length > 0) {
+    if(reservations.length > 0){
         const last = reservations[reservations.length - 1];
-        document.getElementById("lastReservation").innerText =
-            `${last.nom} – ${last.film} (${last.places} places)`;
+        document.getElementById("lastReservation").innerText = `${last.nom} – ${last.film} (${last.places} places) à ${last.heure}`;
     }
 }
-let chartInstance=null;
-function updateChart() {
-    const reservations = JSON.parse(localStorage.getItem("reservations")) || [];
-    const canvas = document.getElementById("filmsChart");
-    const ctx = canvas.getContext("2d");
 
-    // 🔴 S'il n'y a PLUS de réservations → supprimer le graphique
-    if (reservations.length === 0) {
-        if (chartInstance) {
-            chartInstance.destroy();
-            chartInstance = null;
-        }
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+function updateChart(){
+    const reservations = JSON.parse(localStorage.getItem("reservations"))||[];
+    const canvas=document.getElementById("filmsChart");
+    const ctx=canvas.getContext("2d");
+
+    if(reservations.length===0){
+        if(chartInstance){ chartInstance.destroy(); chartInstance=null; }
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         return;
     }
 
-    // 🟢 Calcul des places par film
-    const placesPerFilm = {};
-    reservations.forEach(r => {
-        placesPerFilm[r.film] = (placesPerFilm[r.film] || 0) + r.places;
-    });
+    const placesPerFilm={};
+    reservations.forEach(r=>{ placesPerFilm[r.film]=(placesPerFilm[r.film]||0)+r.places; });
 
-    // Supprimer l'ancien chart avant d'en créer un nouveau
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
+    if(chartInstance){ chartInstance.destroy(); }
 
-    chartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(placesPerFilm),
-            datasets: [{
-                label: 'Nombre de places réservées',
-                data: Object.values(placesPerFilm),
-                borderWidth: 1
+    chartInstance=new Chart(ctx,{
+        type:'bar',
+        data:{
+            labels:Object.keys(placesPerFilm),
+            datasets:[{
+                label:'Places réservées',
+                data:Object.values(placesPerFilm),
+                backgroundColor:'#1fd8fdff',
+                borderWidth:1
             }]
         },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
+        options:{ responsive:true, scales:{ y:{ beginAtZero:true } } }
     });
 }
 
-
-
-
-/* ===================== DASHBOARD OMDB ===================== */
-async function fetchMovieDetails(title) {
-    try {
-        const apiKey = "b159f5ba";
-        const response = await fetch(
-            `https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${apiKey}`
-        );
-        const data = await response.json();
-        if (data.Response === "False") return null;
-        return data;
-    } catch {
-        return null;
-    }
+/* ===================== THEME ===================== */
+function toggleTheme(){ 
+    document.body.classList.toggle("dark"); 
+    document.body.classList.toggle("light"); 
 }
 
+/* ===================== OMDB ===================== */
+async function fetchMovieDetails(title){
+    try{
+        const apiKey="b159f5ba";
+        const response = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${apiKey}`);
+        const data = await response.json();
+        if(data.Response==="False") return null;
+        return data;
+    }catch{ return null; }
+}
 
-async function updateDashboardWithAPI() {
-    const dashboardAPI = document.getElementById("dashAPI");
-    dashboardAPI.innerHTML = "<p>Chargement...</p>";
+async function updateDashboardWithAPI(){
+    const dashboardAPI=document.getElementById("dashAPI"); 
+    dashboardAPI.innerHTML="<p>Chargement...</p>";
 
-    for (let film of films) {
-
-        if (!film.apiTitle) {
-            dashboardAPI.innerHTML += `
-                <p>🎬 ${film.title} : Informations non disponibles</p>
-            `;
-            continue;
-        }
-
-        const details = await fetchMovieDetails(film.apiTitle);
-
-        if (!details) {
-            dashboardAPI.innerHTML += `
-                <p>🎬 ${film.title} : ❌ Introuvable dans OMDB</p>
-            `;
-            continue;
-        }
-
+    for(let film of films){
+        const details = await fetchMovieDetails(film.title);
         dashboardAPI.innerHTML += `
-            <p>
-                🎬 <strong>${film.title}</strong><br>
-                ⭐ IMDb : ${details.imdbRating}<br>
-                🎥 Réalisateur : ${details.Director}
-            </p>
+            <p>🎬 <strong>${film.title}</strong> – IMDb: ${details?.imdbRating||"N/A"} – Réalisateur: ${details?.Director||"N/A"}</p>
         `;
     }
 }
-function resetAll() {
-    if (!confirm("Voulez-vous vraiment tout réinitialiser ?")) return;
 
+/* ===================== RESET ===================== */
+function resetAll(){
+    if(!confirm("Voulez-vous vraiment tout réinitialiser ?")) return;
     localStorage.removeItem("reservations");
     localStorage.removeItem("occupiedSeats");
-
-    updateCount();
-    updateDashboard();
+    updateCount(); 
+    updateDashboard(); 
     updateChart();
     createSeats();
-
-    document.getElementById("lastReservation").innerText = "—";
+    document.getElementById("lastReservation").innerText="—";
     alert("✅ Données réinitialisées avec succès !");
 }
-async function afficherFilms() {
-    moviesContainer.innerHTML = "";
-    filmSelect.innerHTML = "";
 
-    for (let film of films) {
+/* ===================== INIT ===================== */
+async function afficherFilms(){
+    moviesContainer.innerHTML="";
+    filmSelect.innerHTML="";
+
+    for(let film of films){
         const details = await fetchMovieDetails(film.title);
+        let poster = details?.Poster && details.Poster!=="N/A"? details.Poster : "https://via.placeholder.com/300x450?text=No+Image";
 
-        let poster = details?.Poster && details.Poster !== "N/A"
-            ? details.Poster
-            : "https://via.placeholder.com/300x450?text=No+Image";
+        // Affichage des horaires sur la carte du film
+        let horaires = filmHoraires[film.title]?.join(", ") || "Non défini";
 
-        moviesContainer.innerHTML += `
+        moviesContainer.innerHTML+=`
             <div class="movie">
                 <img src="${poster}" alt="${film.title}">
                 <p>${film.title}</p>
                 <small>${film.genre}</small>
-                <small>⭐ IMDb: ${details?.imdbRating || "N/A"}</small>
+                <small>⭐ IMDb: ${details?.imdbRating||"N/A"}</small>
+                <small>🕒 Horaires: ${horaires}</small>
             </div>
         `;
-
-        filmSelect.innerHTML += `<option value="${film.title}">${film.title} - ${film.genre}</option>`;
+        filmSelect.innerHTML+=`<option value="${film.title}">${film.title} - ${film.genre}</option>`;
     }
+
+    updateHeureSelect(); // met à jour automatiquement le premier film
 }
 
-
-
-/* ===================== INIT ===================== */
 
 updateCount();
 updateChart();
