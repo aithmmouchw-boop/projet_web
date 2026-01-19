@@ -80,7 +80,50 @@ input, select { border:1px solid #ccc; }
     font-weight:bold;
     cursor:pointer;
     box-shadow:0 8px 20px rgba(255,0,0,0.35);
+  
     transition:all 0.3s ease;
 }
+.sort-buttons {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sort-buttons button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #444;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+.movie-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.movie-actions button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.movie-actions button:hover {
+  transform: scale(1.1);
+}
+
+
+.sort-buttons button:hover {
+  background: #000;
+  transform: scale(1.05);
+}
+
 .reset-btn:hover { background:linear-gradient(135deg,#ff1a1a,#cc0000); transform:translateY(-2px); box-shadow:0 12px 25px rgba(255,0,0,0.5);}
 .reset-btn:active { transform:scale(0.95);}
